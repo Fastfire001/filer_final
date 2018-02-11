@@ -1,0 +1,22 @@
+{% extends 'layout.html.twig' %}
+
+{% block page_title %}{{ parent() }} - register {% endblock %}
+
+{% block content %}
+    <div class="error"></div>
+    <form action="./Model/register.php" method="POST" class="registerForm">
+        <label for="firstname">First name</label><br>
+        <input type="text" name="firstname" id="firstname" maxlength="254" class="form-control" value=""><br>
+        <label for="lastname">Last name</label><br>
+        <input type="text" name="lastname" id="lastname" maxlength="254" class="form-control" value=""><br>
+        <label for="username">Username</label><br>
+        <input type="text" name="username" id="username" maxlength="254" class="form-control" value=""><br>
+        <label for="email">Email</label><br>
+        <input type="email" name="email" id="email" maxlength="254" class="form-control" value=""><br>
+        <label for="password">Password</label><br>
+        <input type="password" name="password" id="password" maxlength="254" class="form-control"><br>
+        <label for="password_repeat">Repeat password</label><br>
+        <input type="password" name="password_repeat" id="password_repeat" maxlength="254" class="form-control"><br>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+{% endblock %}
