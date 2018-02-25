@@ -34,8 +34,9 @@ class MainController extends BaseController
                 return $this->render('register.html.twig', $data);
             }
                 $userManager->addUser($firstname, $lastname, $username, $email, $password);
+            return $this->redirectToRoute('login');
         }
-        return $this->redirectToRoute('login');
+        return $this->render('register.html.twig');
     }
 
     public function loginaction()
