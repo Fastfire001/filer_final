@@ -21,6 +21,7 @@ class MainController extends BaseController
             $password = $_POST['password'];
             $password_repeat = $_POST['password_repeat'];
             $formManager = new FormManager();
+            $userManager = new UserManager();
             $form_result = $formManager->checkRegister($firstname, $lastname, $username, $email, $password, $password_repeat);
             if (true !== $form_result) {
                 $data = [
@@ -31,33 +32,10 @@ class MainController extends BaseController
                     'email' => $email
                 ];
                 return $this->render('register.html.twig', $data);
-            } else {
-                $userManager = new UserManager();
-                $usersByUsername = $userManager->getUserByUsername($username);
-                $usersByEmail = $userManager->getUserByEmail($email);
-                if (!empty($usersByUsername)) {
-                    $actualUser[] = 'this username is already used';
-                }
-                if (!empty($usersByEmail)) {
-                    $actualUser[] = 'this email is already used';
-                }
-                if (!empty( $actualUser)){
-                    $data = [
-                        'errors' => $actualUser,
-                        'firstname' => $firstname,
-                        'lastname' => $lastname,
-                        'username' => $username,
-                        'email' => $email
-                    ];
-                    return $this->render('register.html.twig', $data);
-                } else {
-                    $userManager->addUser($firstname, $lastname, $username, $email, $password);
-                }
             }
-
+                $userManager->addUser($firstname, $lastname, $username, $email, $password);
         }
-
-        return $this->render('register.html.twig');
+        return $this->redirectToRoute('login');
     }
 
     public function loginaction()
