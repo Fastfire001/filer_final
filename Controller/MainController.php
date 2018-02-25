@@ -3,6 +3,7 @@
 require_once('Cool/BaseController.php');
 require_once('Model/FormManager.php');
 require_once('Model/UserManager.php');
+session_start();
 
 class MainController extends BaseController
 {
@@ -13,6 +14,9 @@ class MainController extends BaseController
 
     public function registerAction()
     {
+        if (!empty($_SESSION)) {
+            return $this->redirectToRoute('home');
+        }
         if (!empty($_POST['firstname']) || !empty($_POST['lastname']) || !empty($_POST['username']) || !empty($_POST['email']) || !empty($_POST['password']) || !empty($_POST['password_repeat'])) {
             $firstname = htmlentities($_POST['firstname']);
             $lastname = htmlentities($_POST['lastname']);
@@ -33,7 +37,7 @@ class MainController extends BaseController
                 ];
                 return $this->render('register.html.twig', $data);
             }
-                $userManager->addUser($firstname, $lastname, $username, $email, $password);
+            $userManager->addUser($firstname, $lastname, $username, $email, $password);
             return $this->redirectToRoute('login');
         }
         return $this->render('register.html.twig');
@@ -41,6 +45,33 @@ class MainController extends BaseController
 
     public function loginaction()
     {
+        if (!empty($_SESSION)) {
+            return $this->redirectToRoute('home');
+        }
+        if (!empty($_POST['username']) || !empty($_POST['password'])) {
+            $username = htmlentities($_POST['username']);
+            $password = htmlentities($_POST['password']);
+            $formManager = new FormManager();
+            $result = $formManager->checkLogin($username, $password);
+            if (true == $result) {
+                $userManager = new UserManager();
+                $userManager->login($username, $password);
+                $this->redirectToRoute('home');
+            } else {
+                $data = [
+                    'errors' => 'Wrong password or username',
+                    'username' => $username
+                ];
+                return $this->render('login.html.twig', $data);
+            }
+        }
         return $this->render('login.html.twig');
+    }
+
+    public function logoutaction()
+    {
+        $userManager = new UserManager();
+        $userManager->logout();
+        return $this->redirectToRoute('home');
     }
 }

@@ -38,4 +38,20 @@ class FormManager
         }
         return $data;
     }
+
+    public function checkLogin($username, $password)
+    {
+        if (empty($password)){
+            return false;
+        }
+        $userManager = new UserManager();
+        $usersByUsername = $userManager->getUserByUsername($username);
+        if ($password == $usersByUsername['password']){
+            return true;
+        } else if (empty($usersByUsername)){
+            return false;
+        } else {
+            return false;
+        }
+    }
 }
