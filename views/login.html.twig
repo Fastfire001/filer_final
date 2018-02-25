@@ -3,10 +3,12 @@
 {% block page_title %}{{ parent() }} - login {% endblock %}
 
 {% block content %}
-    <div class="error"></div>
-    <form action="login.php" method="POST" class="loginForm">
+    <div class="error">
+            {{ errors }}
+    </div>
+    <form action="?action=login" method="POST" class="loginForm">
         <label for="username">Username</label><br>
-        <input type="text" name="username" id="username" class="form-control" value=""><br>
+        <input type="text" name="username" id="username" class="form-control" value="{{ username }}"><br>
         <label for="password">Password</label><br>
         <input type="password" name="password" id="password" class="form-control"><br>
         <button type="submit" class="btn btn-primary">Login</button>

@@ -1,12 +1,12 @@
 <?php
 
+require_once('Model/UserManager.php');
+
 class FormManager
 {
     public function checkRegister($firstname, $lastname, $username, $email, $password, $password_repeat)
     {
-        if (strlen($firstname) >= 2 && strlen($lastname) >= 2 && strlen($username) >= 2 && filter_var($email, FILTER_VALIDATE_EMAIL) && strlen($password) >= 6 && $password == $password_repeat) {
-            return true;
-        } else if (strlen($firstname) < 2) {
+        if (strlen($firstname) < 2) {
             $data[] = "First name must be 2 characters or more";
         }
         if (strlen($lastname) < 2) {
@@ -24,6 +24,34 @@ class FormManager
         if ($password !== $password_repeat) {
             $data[] = "Both passwords must be the same";
         }
+        $userManager = new UserManager();
+        $usersByUsername = $userManager->getUserByUsername($username);
+        $usersByEmail = $userManager->getUserByEmail($email);
+        if (!empty($usersByUsername)) {
+            $data[] = 'this username is already used';
+        }
+        if (!empty($usersByEmail)) {
+            $data[] = 'this email is already used';
+        }
+        if (empty($data)){
+            return true;
+        }
         return $data;
+    }
+
+    public function checkLogin($username, $password)
+    {
+        if (empty($password)){
+            return false;
+        }
+        $userManager = new UserManager();
+        $usersByUsername = $userManager->getUserByUsername($username);
+        if ($password == $usersByUsername['password']){
+            return true;
+        } else if (empty($usersByUsername)){
+            return false;
+        } else {
+            return false;
+        }
     }
 }

@@ -52,4 +52,15 @@ class UserManager
         $result->bindParam(':password', $password);
         $result->execute();
     }
+
+    public function login($username, $id)
+    {
+        $_SESSION['username'] = $username;
+        $_SESSION['id'] = $id;
+    }
+
+    public function logout()
+    {
+        session_destroy();
+    }
 }
