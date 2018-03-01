@@ -1,4 +1,8 @@
-small
-{
-    color: purple;
+.hide{
+    display: none;
+}
+
+.popup-rename{
+    //TODO
+    //style for popup
 }

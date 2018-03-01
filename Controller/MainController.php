@@ -12,14 +12,36 @@ class MainController extends BaseController
     {
         $fileManager = new FileManager();
         $path = $_SESSION['id'];
+
         if (isset($_GET['download'])){
             $fileManager->download($_GET['download']);
         }
         if (isset($_GET['path'])){
-            $path = $path . '/' . $_GET['path'];
+            $path = $path . $_GET['path'];
             $data['path'] = $_GET['path'];
         }
+        if (!empty($_POST['new-name']) || !empty($_POST['old-name'])){
+            $newName = htmlentities($_POST['new-name']);
+            $oldName = htmlentities($_POST['old-name']);
+            $pathFile = htmlentities($_POST['path']);
+            $formManager = new FormManager();
+            $newName = $formManager->deleteSpecialCharacter($newName);
+            if (empty($pathFile)){
+                $pathFile = './Uploads/' . $_SESSION['id'];
+            } else {
+                $pathFile = './Uploads/' . $_SESSION['id'] . $pathFile;
+            }
+            $result = $formManager->checkRenameFile($newName, $pathFile, $oldName);
+            if ('ok' == $result){
+                rename($pathFile . '/' . $oldName, $pathFile . '/' . $newName);
+                var_dump($_GET['path']);
+            } else {
+                $data['errors'] = $result;
+            }
+        }
         $dirContent = $fileManager->scanDir($path);
+        var_dump($path);
+        var_dump($dirContent);
         $data['dirs'] = $dirContent['0'];
         $data['files'] = $dirContent['1'];
         return $this->render('home.html.twig', $data);
