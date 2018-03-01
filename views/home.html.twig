@@ -3,8 +3,13 @@
 {% block page_title %}{{ parent() }}{% endblock %}
 
 {% block content %}
-<h1>
-  Welcome to the Cool Framework<br>
-  <small>By SUP'Internet DEV 2020</small>
-</h1>
+    {% for dir in dirs %}
+        <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
+        <br>
+    {% endfor %}
+    <br>
+    {% for file in files %}
+        <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}">{{ file }}</a>
+        <br>
+    {% endfor %}
 {% endblock %}

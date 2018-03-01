@@ -3,13 +3,26 @@
 require_once('Cool/BaseController.php');
 require_once('Model/FormManager.php');
 require_once('Model/UserManager.php');
+require_once('Model/FileManager.php');
 session_start();
 
 class MainController extends BaseController
 {
     public function homeAction()
     {
-        return $this->render('home.html.twig');
+        $fileManager = new FileManager();
+        $path = $_SESSION['id'];
+        if (isset($_GET['download'])){
+            $fileManager->download($_GET['download']);
+        }
+        if (isset($_GET['path'])){
+            $path = $path . '/' . $_GET['path'];
+            $data['path'] = $_GET['path'];
+        }
+        $dirContent = $fileManager->scanDir($path);
+        $data['dirs'] = $dirContent['0'];
+        $data['files'] = $dirContent['1'];
+        return $this->render('home.html.twig', $data);
     }
 
     public function registerAction()
@@ -38,6 +51,8 @@ class MainController extends BaseController
                 return $this->render('register.html.twig', $data);
             }
             $userManager->addUser($firstname, $lastname, $username, $email, $password);
+            $user = $userManager->getUserByUsername($username);
+            mkdir('Uploads/' . $user['id']);
             return $this->redirectToRoute('login');
         }
         return $this->render('register.html.twig');
@@ -55,7 +70,8 @@ class MainController extends BaseController
             $result = $formManager->checkLogin($username, $password);
             if (true == $result) {
                 $userManager = new UserManager();
-                $userManager->login($username, $password);
+                $user = $userManager->getUserByUsername($username);
+                $userManager->login($username, $user['id']);
                 $this->redirectToRoute('home');
             } else {
                 $data = [
