@@ -1,5 +1,5 @@
 function renameForm() {
-    var popup = document.querySelector('.popup-rename-file');
+    var popup = document.querySelector('.popup-rename');
     popup.classList.remove('hide');
     var oldName = this.previousSibling.previousSibling.textContent;
     popup.childNodes[1].childNodes[4].value = oldName;
@@ -8,7 +8,7 @@ function renameForm() {
 }
 
 function main() {
-    var btnRename = document.querySelectorAll('span.rename-file');
+    var btnRename = document.querySelectorAll('span.rename');
     for (var i = 0; i < btnRename.length; i++){
         btnRename[i].addEventListener("click", renameForm);
     }

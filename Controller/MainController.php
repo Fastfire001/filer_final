@@ -11,39 +11,39 @@ class MainController extends BaseController
     public function homeAction()
     {
         $fileManager = new FileManager();
-        $path = $_SESSION['id'];
+        $path = '';
 
-        if (isset($_GET['download'])){
+        if (isset($_GET['download'])) {
             $fileManager->download($_GET['download']);
         }
-        if (isset($_GET['path'])){
-            $path = $path . $_GET['path'];
-            $data['path'] = $_GET['path'];
+        if (isset($_GET['path'])) {
+            $path = $_GET['path'];
+            $data['path'] = $path;
         }
-        if (!empty($_POST['new-name']) || !empty($_POST['old-name'])){
-            $newName = htmlentities($_POST['new-name']);
-            $oldName = htmlentities($_POST['old-name']);
-            $pathFile = htmlentities($_POST['path']);
+        if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
-            $newName = $formManager->deleteSpecialCharacter($newName);
-            if (empty($pathFile)){
-                $pathFile = './Uploads/' . $_SESSION['id'];
-            } else {
-                $pathFile = './Uploads/' . $_SESSION['id'] . $pathFile;
-            }
-            $result = $formManager->checkRenameFile($newName, $pathFile, $oldName);
-            if ('ok' == $result){
-                rename($pathFile . '/' . $oldName, $pathFile . '/' . $newName);
-                var_dump($_GET['path']);
+            $oldName = $_POST['old-name'];
+            $pathFile = './Uploads/' . $_SESSION['id'] . $_POST['path'];
+            $newName = $formManager->deleteSpecialCharacter($_POST['new-name']);
+            $result = $formManager->checkRename($newName, $pathFile, $oldName);
+            if ('ok' == $result) {
+                $oldPath = $pathFile . '/' . $oldName;
+                $newPath = $pathFile . '/' . $newName;
+                $fileManager->rename($oldPath, $newPath);
             } else {
                 $data['errors'] = $result;
             }
         }
         $dirContent = $fileManager->scanDir($path);
-        var_dump($path);
-        var_dump($dirContent);
         $data['dirs'] = $dirContent['0'];
         $data['files'] = $dirContent['1'];
+
+        //if (isset($_GET['path'])){
+        //    $path = explode($_GET['path'], '/');
+        //    var_dump($path);
+        //} else {
+        //    //todo le cas ou il n'y a pas de path définie
+        //}
         return $this->render('home.html.twig', $data);
     }
 

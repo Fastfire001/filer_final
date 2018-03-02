@@ -2,9 +2,17 @@
 
 class FileManager
 {
-    public function scanDir($id, $path = false)
+    public function scanDir($path)
     {
-        $dirPath = 'Uploads/' . $id;
+        $path = explode('/', $path);
+        for ($i = 0; $i < sizeof($path); $i++){
+            $path[$i] = str_replace('.', '', $path[$i]); //ILLEGAL ACTION
+        }
+        $path = implode('/', $path);
+        $dirPath = './Uploads/' . $_SESSION['id'];
+        if ('' !== $path){
+            $dirPath = $dirPath . $path;
+        }
         $result = scandir($dirPath);
         $dirs = [];
         $files = [];
@@ -26,5 +34,17 @@ class FileManager
         exit;
     }
 
-
+    public function rename($oldPath, $newPath)
+    {
+        if (is_dir($oldPath)){
+            $newPath = explode('/', $newPath);
+            for ($i = 1; $i < sizeof($newPath); $i++){
+                $newPath[$i] = str_replace('.', '', $newPath[$i]);
+            }
+            $newPath[0] = '.';
+            $newPath = implode('/', $newPath);
+            var_dump($newPath);
+        }
+        rename($oldPath, $newPath);
+    }
 }

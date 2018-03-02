@@ -55,16 +55,25 @@ class FormManager
         }
     }
 
-    public function checkRenameFile($newName, $pathFile, $oldName)
+    public function checkRename($newName, $pathFile, $oldName)
     {
         $data = [];
         if (!file_exists($pathFile . '/' . $oldName)) {
             $data[] = 'the file you are trying to rename does not exist';
         }
         if (strlen($newName) == 0) {
-            $data[] = 'the file name is too short';
+            $data[] = 'the name is too short';
         } else if (file_exists($pathFile . '/' . $newName)) {
             $data[] = 'the file already exists';
+        }
+        $count = 0;
+        for ($i = 0; $i < strlen($newName); $i++){
+            if ('.' == $newName[$i]){
+                $count++;
+            }
+        }
+        if ($count == strlen($newName)){
+            $data[] = 'invalid name';
         }
         if (empty($data)){
             return 'ok';
@@ -73,13 +82,22 @@ class FormManager
     }
 
     public function deleteSpecialCharacter($string){
-        $string = str_replace('/', '', $string);
-        $string = str_replace('&', '', $string);
-        $string = str_replace('#', '', $string);
-        $string = str_replace('@', '', $string);
-        $string = str_replace('$', '', $string);
-        $string = str_replace('£', '', $string);
-        $string = str_replace('%', '', $string);
+        $char = [
+            '/',
+            ':',
+            '"',
+            "\\",
+            '|',
+            '?',
+            '<',
+            '>',
+            '*',
+            '!',
+            ','
+        ];
+        for ($i = 0; $i < sizeof($char); $i++){
+            $string = str_replace($char[$i], '', $string);
+        }
         return $string;
     }
 }
