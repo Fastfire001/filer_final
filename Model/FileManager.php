@@ -13,6 +13,9 @@ class FileManager
         if ('' !== $path){
             $dirPath = $dirPath . $path;
         }
+        if (!is_dir($dirPath)){
+            return false;           //ILLEGAL ACTION
+        }
         $result = scandir($dirPath);
         $dirs = [];
         $files = [];
@@ -27,7 +30,18 @@ class FileManager
     }
 
     public function download($path){
+        $path = explode('/', $path);
+        for ($i = 0; $i < sizeof($path) - 1; $i++){
+            $path[$i] = str_replace('.', '', $path[$i]);
+        }
+        if ('..' == $path[sizeof($path) - 1]){
+            return false; //illegal action
+        }
+        $path = implode('/', $path);
         $path = 'Uploads/' . $_SESSION['id'] . $path;
+        if (!is_file($path)){
+            return false; //illegal action
+        }
         header('Content-Disposition: attachment; filename="'.basename($path).'"');
         header('Content-Length: ' . filesize($path));
         readfile($path);

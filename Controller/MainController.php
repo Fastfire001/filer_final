@@ -38,12 +38,6 @@ class MainController extends BaseController
         $data['dirs'] = $dirContent['0'];
         $data['files'] = $dirContent['1'];
 
-        //if (isset($_GET['path'])){
-        //    $path = explode($_GET['path'], '/');
-        //    var_dump($path);
-        //} else {
-        //    //todo le cas ou il n'y a pas de path définie
-        //}
         return $this->render('home.html.twig', $data);
     }
 
