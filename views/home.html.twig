@@ -17,6 +17,12 @@
             {{ error }} <br>
         {% endfor %}
     </div>
+    <div class="dir-nav">
+        <a href="?action=home">{{ username }}</a>
+        {% for dir in dirNav %}
+             / <a href="?action=home&path={{ dir.path }}">{{ dir.name }}</a>
+        {% endfor %}
+    </div>
     {% for dir in dirs %}
         <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
         <span class="rename" data-path="{{ path }}">rename</span>

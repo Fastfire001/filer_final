@@ -12,6 +12,9 @@ class MainController extends BaseController
     {
         $fileManager = new FileManager();
         $path = '';
+        if (isset($_SESSION['username'])) {
+            $data['username'] = $_SESSION['username'];
+        }
 
         if (isset($_GET['download'])) {
             $fileManager->download($_GET['download']);
@@ -38,6 +41,25 @@ class MainController extends BaseController
         $data['dirs'] = $dirContent['0'];
         $data['files'] = $dirContent['1'];
 
+        if (isset($_GET['path'])) {
+            $path = explode('/', $_GET['path']);
+            $path = array_filter($path);
+            $path = array_values($path);
+            $dirNav[0] = '/' . $path[0];
+            $dirNavT = [];
+            for ($i = 1; $i < sizeof($path); $i++){
+                $dirNav[$i] = $dirNav[$i - 1] . '/' . $path[$i];
+            }
+            for ($i = 0; $i < sizeof($path); $i++){
+                $dirNavT[$i] = [
+                    'path' => $dirNav[$i],
+                    'name' => $path[$i]
+                ];
+            }
+            $data['dirNav'] = $dirNavT;
+        } else {
+            $data['dirNav'] = [];
+        }
         return $this->render('home.html.twig', $data);
     }
 
