@@ -61,4 +61,26 @@ class FileManager
         }
         rename($oldPath, $newPath);
     }
+
+    public function delete ($delete)
+    {
+        $path = 'Uploads/' . $_SESSION['id'] . '/' . $delete;
+        if (is_file($path)){
+            unlink($path);
+        } elseif (is_dir($path)){
+            $this->rmdir_recursive($path);
+        } else {
+            //ILLEGAL ACTION
+        }
+    }
+
+    private function rmdir_recursive($dir)
+    {
+        foreach(scandir($dir) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+            if (is_dir("$dir/$file")) $this->rmdir_recursive("$dir/$file");
+            else unlink("$dir/$file");
+        }
+        rmdir($dir);
+    }
 }
