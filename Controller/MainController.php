@@ -3,13 +3,64 @@
 require_once('Cool/BaseController.php');
 require_once('Model/FormManager.php');
 require_once('Model/UserManager.php');
+require_once('Model/FileManager.php');
 session_start();
 
 class MainController extends BaseController
 {
     public function homeAction()
     {
-        return $this->render('home.html.twig');
+        $fileManager = new FileManager();
+        $path = '';
+        if (isset($_SESSION['username'])) {
+            $data['username'] = $_SESSION['username'];
+        }
+
+        if (isset($_GET['download'])) {
+            $fileManager->download($_GET['download']);
+        }
+        if (isset($_GET['path'])) {
+            $path = $_GET['path'];
+            $data['path'] = $path;
+        }
+        if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
+            $formManager = new FormManager();
+            $oldName = $_POST['old-name'];
+            $pathFile = './Uploads/' . $_SESSION['id'] . $_POST['path'];
+            $newName = $formManager->deleteSpecialCharacter($_POST['new-name']);
+            $result = $formManager->checkRename($newName, $pathFile, $oldName);
+            if ('ok' == $result) {
+                $oldPath = $pathFile . '/' . $oldName;
+                $newPath = $pathFile . '/' . $newName;
+                $fileManager->rename($oldPath, $newPath);
+            } else {
+                $data['errors'] = $result;
+            }
+        }
+        $dirContent = $fileManager->scanDir($path);
+        $data['dirs'] = $dirContent['0'];
+        $data['files'] = $dirContent['1'];
+
+        if (isset($_GET['path'])) {
+            $path = explode('/', $_GET['path']);
+            $path = array_filter($path);
+            $path = array_values($path);
+            $dirNav[0] = '/' . $path[0];
+            $dirNavT = [];
+            for ($i = 1; $i < sizeof($path); $i++){
+                $dirNav[$i] = $dirNav[$i - 1] . '/' . $path[$i];
+            }
+            for ($i = 0; $i < sizeof($path); $i++){
+                $dirNavT[$i] = [
+                    'path' => $dirNav[$i],
+                    'name' => $path[$i]
+                ];
+            }
+            $data['dirNav'] = $dirNavT;
+        } else {
+            $data['dirNav'] = [];
+        }
+        return $this->render('home.html.twig', $data);
     }
 
     public function registerAction()
@@ -38,6 +89,8 @@ class MainController extends BaseController
                 return $this->render('register.html.twig', $data);
             }
             $userManager->addUser($firstname, $lastname, $username, $email, $password);
+            $user = $userManager->getUserByUsername($username);
+            mkdir('Uploads/' . $user['id']);
             return $this->redirectToRoute('login');
         }
         return $this->render('register.html.twig');
@@ -55,7 +108,8 @@ class MainController extends BaseController
             $result = $formManager->checkLogin($username, $password);
             if (true == $result) {
                 $userManager = new UserManager();
-                $userManager->login($username, $password);
+                $user = $userManager->getUserByUsername($username);
+                $userManager->login($username, $user['id']);
                 $this->redirectToRoute('home');
             } else {
                 $data = [

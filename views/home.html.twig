@@ -3,8 +3,35 @@
 {% block page_title %}{{ parent() }}{% endblock %}
 
 {% block content %}
-<h1>
-  Welcome to the Cool Framework<br>
-  <small>By SUP'Internet DEV 2020</small>
-</h1>
+    <div class="popup-rename hide">
+        <form action="?action=home&path={{ path }}" method="POST">
+            <label for="new-name">New name:</label><br>
+            <input type="text" id="new-name" name="new-name"><br>
+            <input type="hidden" name="old-name">
+            <input type="hidden" name="path">
+            <input type="submit">
+        </form>
+    </div>
+    <div class="error">
+        {% for error in errors %}
+            {{ error }} <br>
+        {% endfor %}
+    </div>
+    <div class="dir-nav">
+        <a href="?action=home">{{ username }}</a>
+        {% for dir in dirNav %}
+             / <a href="?action=home&path={{ dir.path }}">{{ dir.name }}</a>
+        {% endfor %}
+    </div>
+    {% for dir in dirs %}
+        <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
+        <span class="rename" data-path="{{ path }}">rename</span>
+        <br>
+    {% endfor %}
+    <br>
+    {% for file in files %}
+        <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
+        <span class="rename" data-path="{{ path }}">rename</span>
+        <br>
+    {% endfor %}
 {% endblock %}

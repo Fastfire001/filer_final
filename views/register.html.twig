@@ -3,6 +3,7 @@
 {% block page_title %}{{ parent() }} - register {% endblock %}
 
 {% block content %}
+    {{ path }}
     <div class="error">
         {% for error in errors %}
             {{ error }} <br>
