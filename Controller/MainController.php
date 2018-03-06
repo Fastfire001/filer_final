@@ -12,6 +12,9 @@ class MainController extends BaseController
     {
         $fileManager = new FileManager();
         $path = '';
+        if (empty($_SESSION)){
+            return $this->render('home.html.twig');
+        }
         if (isset($_SESSION['username'])) {
             $data['username'] = $_SESSION['username'];
         }
@@ -23,6 +26,37 @@ class MainController extends BaseController
             $path = $_GET['path'];
             $data['path'] = $path;
         }
+
+        if (isset($_FILES['userfile']) || isset($_POST['fileName'])){
+            $fileName = explode('/', $_POST['fileName']);
+            $fileName = array_filter($fileName);
+            $fileName = array_values($fileName);
+            for ($i = 0; $i < sizeof($fileName); $i++){
+                if ('..' == $fileName[$i] || '.' == $fileName[$i]){
+                    unset($fileName[$i]);
+                }
+            }
+            $fileName = array_values($fileName);
+            $fileName = implode('/', $fileName);
+            $pathFile = '';
+            if (isset($_GET['path'])){
+                $pathFile = explode('/', $_GET['path']);
+                $pathFile = array_filter($pathFile);
+                $pathFile = array_values($pathFile);
+                for ($i = 0; $i < sizeof($pathFile); $i++){
+                    if ('..' == $pathFile[$i] || '.' == $pathFile[$i]){
+                        unset($pathFile[$i]);
+                    }
+                }
+                $pathFile = array_values($pathFile);
+                $pathFile = implode('/', $pathFile);
+            }
+            $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);
+            if ('ok' !== $result){
+                $data['errors'] = $result;
+            }
+        }
+
         if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
             $oldName = $_POST['old-name'];
@@ -37,11 +71,25 @@ class MainController extends BaseController
                 $data['errors'] = $result;
             }
         }
+
+        if (!empty($_POST['delete-path'])){
+            $deletePath = explode('/', $_POST['delete-path']);
+            $deletePath = array_filter($deletePath);
+            $deletePath = array_values($deletePath);
+            for ($i = 0; $i < sizeof($deletePath); $i++){
+                if ('..' == $deletePath[$i] || '.' == $deletePath[$i]){
+                    unset($deletePath[$i]);
+                }
+            }
+            $deletePath = array_values($deletePath);
+            $deletePath = implode('/', $deletePath);
+            $fileManager->delete($deletePath);
+        }
         $dirContent = $fileManager->scanDir($path);
         $data['dirs'] = $dirContent['0'];
         $data['files'] = $dirContent['1'];
 
-        if (isset($_GET['path'])) {
+        if (!empty($_GET['path'])) {
             $path = explode('/', $_GET['path']);
             $path = array_filter($path);
             $path = array_values($path);

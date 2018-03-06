@@ -3,35 +3,67 @@
 {% block page_title %}{{ parent() }}{% endblock %}
 
 {% block content %}
-    <div class="popup-rename hide">
-        <form action="?action=home&path={{ path }}" method="POST">
-            <label for="new-name">New name:</label><br>
-            <input type="text" id="new-name" name="new-name"><br>
-            <input type="hidden" name="old-name">
-            <input type="hidden" name="path">
-            <input type="submit">
-        </form>
-    </div>
-    <div class="error">
-        {% for error in errors %}
-            {{ error }} <br>
+    {% if username %}
+        <div class="popup-rename hide">
+            <form action="?action=home&path={{ path }}" method="POST">
+                <label for="new-name">New name:</label><br>
+                <input type="text" id="new-name" name="new-name"><br>
+                <input type="hidden" name="old-name">
+                <input type="hidden" name="path">
+                <input type="submit">
+            </form>
+        </div>
+        <div class="popup-delete hide">
+            <form class="popup-delete" action="?action=home&path={{ path }}" method="POST">
+                <input class="delete-path" type="hidden" name="delete-path">
+                Do you want delete <span class="delete-name"></span>
+                <br>
+                <input type="submit" value="Yes">
+                <span class="close-delete">No</span>
+            </form>
+        </div>
+        <nav>
+            <a href="?action=home">{{ username }}</a><a href="?action=logout">Logout</a>
+        </nav>
+        <div class="upload">
+            <form enctype="multipart/form-data" action="?action=home&path={{ path }}" method="POST">
+                <input type="hidden" name="MAX_FILE_SIZE" value="20000000">
+                <input name="userfile" type="file" /><br>
+                <label for="fileName">Choose the name of your file (don't forget the extension):</label><br>
+                <input id="fileName" name="fileName" type="text"><br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+        <div class="error">
+            {% for error in errors %}
+                {{ error }} <br>
+            {% endfor %}
+        </div>
+        <div class="dir-nav">
+            <a href="?action=home">{{ username }}</a>
+            {% for dir in dirNav %}
+                 / <a href="?action=home&path={{ dir.path }}">{{ dir.name }}</a>
+            {% endfor %}
+        </div>
+        {% for dir in dirs %}
+            <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
+            <span class="rename" data-path="{{ path }}">rename</span>
+            <span class="delete" data-path="{{ path }}/{{ dir }}">delete</span>
+            <br>
         {% endfor %}
-    </div>
-    <div class="dir-nav">
-        <a href="?action=home">{{ username }}</a>
-        {% for dir in dirNav %}
-             / <a href="?action=home&path={{ dir.path }}">{{ dir.name }}</a>
+        <br>
+        {% for file in files %}
+            <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
+            <span class="rename" data-path="{{ path }}">rename</span>
+            <span class="delete" data-path="{{ path }}/{{ file }}">delete</span>
+            <br>
         {% endfor %}
-    </div>
-    {% for dir in dirs %}
-        <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
-        <span class="rename" data-path="{{ path }}">rename</span>
-        <br>
-    {% endfor %}
-    <br>
-    {% for file in files %}
-        <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
-        <span class="rename" data-path="{{ path }}">rename</span>
-        <br>
-    {% endfor %}
+    {% else %}
+        <nav>
+            <a href="?action=register" class="register">Register</a><a href="?action=login" class="login">Login</a>
+        </nav>
+        <div>
+            Connect to find your files
+        </div>
+    {% endif %}
 {% endblock %}
