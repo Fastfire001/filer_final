@@ -26,8 +26,9 @@
             <a href="?action=home">{{ username }}</a><a href="?action=logout">Logout</a>
         </nav>
         <div class="upload">
-            <form action="?action=home" method="POST" >
-                <input type="file" name="file"><br>
+            <form enctype="multipart/form-data" action="?action=home&path={{ path }}" method="POST">
+                <input type="hidden" name="MAX_FILE_SIZE" value="20000000">
+                <input name="userfile" type="file" /><br>
                 <label for="fileName">Choose the name of your file (don't forget the extension):</label><br>
                 <input id="fileName" name="fileName" type="text"><br>
                 <input type="submit" value="Send">

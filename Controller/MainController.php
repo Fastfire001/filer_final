@@ -26,6 +26,37 @@ class MainController extends BaseController
             $path = $_GET['path'];
             $data['path'] = $path;
         }
+
+        if (isset($_FILES['userfile']) || isset($_POST['fileName'])){
+            $fileName = explode('/', $_POST['fileName']);
+            $fileName = array_filter($fileName);
+            $fileName = array_values($fileName);
+            for ($i = 0; $i < sizeof($fileName); $i++){
+                if ('..' == $fileName[$i] || '.' == $fileName[$i]){
+                    unset($fileName[$i]);
+                }
+            }
+            $fileName = array_values($fileName);
+            $fileName = implode('/', $fileName);
+            $pathFile = '';
+            if (isset($_GET['path'])){
+                $pathFile = explode('/', $_GET['path']);
+                $pathFile = array_filter($pathFile);
+                $pathFile = array_values($pathFile);
+                for ($i = 0; $i < sizeof($pathFile); $i++){
+                    if ('..' == $pathFile[$i] || '.' == $pathFile[$i]){
+                        unset($pathFile[$i]);
+                    }
+                }
+                $pathFile = array_values($pathFile);
+                $pathFile = implode('/', $pathFile);
+            }
+            $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);
+            if ('ok' !== $result){
+                $data['errors'] = $result;
+            }
+        }
+
         if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
             $oldName = $_POST['old-name'];
