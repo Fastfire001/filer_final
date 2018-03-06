@@ -82,44 +82,4 @@ class FileManager
         }
         rmdir($dir);
     }
-
-    public function uploadFile($fileName, $file, $path)
-    {
-        if ('' == $fileName){
-            $path = 'Uploads/' . $_SESSION['id'] . '/' . $path . '/' . $file['name'];
-        } else {
-            $path = 'Uploads/' . $_SESSION['id'] . '/' . $path . '/' . $fileName;
-        }
-        $errors = [];
-        if (!$this->checkSize($file)) {
-            $errors[] = 'The file is too large'; //ILLEGAL ACTION
-        }
-        if (!$this->fileExists($path)) {
-            $errors[] = 'The file you tried to upload already exist'; //ILLEGAL ACTION
-        }
-        if (empty($errors)){
-            move_uploaded_file($file['tmp_name'], $path);
-            return 'ok';
-        } else {
-            return $errors;
-        }
-    }
-
-    private function checkSize($file)
-    {
-        if (9999999 > $file['size']) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private function fileExists($path)
-    {
-        if (file_exists($path)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 }
