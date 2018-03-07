@@ -1,18 +1,21 @@
 <?php
-function userTracker($action){
+
+private function userTracker(){
     if (!empty($_SESSION['username'])){
-        $begin = nl2br('User '.$_SESSION['username']) ;
+        $begin = 'User '.$_SESSION['username'] . '(' . $_SESSION['id'] . ')' ;
     }else{
         $begin = 'Unknown user';
     }
-    return $begin.' '.$action.' at '.date('r') .nl2br('\n');
+    return $begin.' '.$_GET['action'].' at '.date('r') . ': ';
 }
-function writeToLog($newMessage, $file){
-    if ($file === 'access'){
+
+public function writeToLog($newMessage, $security = true){
+    if ($security === false){
         $file = fopen('securitylogs/access.log', 'ab');
     }else{
         $file = fopen('securitylogs/security.log', 'ab');
     }
+    $newMessage = $this->userTracker().$newMessage;
     fwrite($file, $newMessage."\n");
     fclose($file);
 }
