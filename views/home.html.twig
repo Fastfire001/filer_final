@@ -4,6 +4,14 @@
 
 {% block content %}
     {% if username %}
+        <div class="popup-moove hide">
+            <form action="?action=home&path={{ path }}" method="POST">
+                <label for="moove-input">Where do you want to move your file?</label><br>
+                <input id="moove-input" name="moove-next-path" type="text" value="{{ path }}"><br>
+                <input type="hidden" name="input-hidden-moove" class="input-hidden-moove">
+                <input type="submit">
+            </form>
+        </div>
         <div class="popup-rename hide">
             <form action="?action=home&path={{ path }}" method="POST">
                 <label for="new-name">New name:</label><br>
@@ -22,9 +30,6 @@
                 <span class="close-delete">No</span>
             </form>
         </div>
-        <nav>
-            <a href="?action=home">{{ username }}</a><a href="?action=logout">Logout</a>
-        </nav>
         <div class="upload">
             <form enctype="multipart/form-data" action="?action=home&path={{ path }}" method="POST">
                 <input type="hidden" name="MAX_FILE_SIZE" value="20000000">
@@ -46,22 +51,23 @@
             {% endfor %}
         </div>
         {% for dir in dirs %}
-            <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
-            <span class="rename" data-path="{{ path }}">rename</span>
-            <span class="delete" data-path="{{ path }}/{{ dir }}">delete</span>
-            <br>
+            <div>
+                <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
+                <span class="rename" data-path="{{ path }}">rename</span>
+                <span class="delete" data-path="{{ path }}/{{ dir }}">delete</span>
+                <span class="moove" data-path="{{ path }}/{{ dir }}">moove</span>
+            </div>
         {% endfor %}
         <br>
         {% for file in files %}
-            <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
-            <span class="rename" data-path="{{ path }}">rename</span>
-            <span class="delete" data-path="{{ path }}/{{ file }}">delete</span>
-            <br>
+            <div>
+                <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
+                <span class="rename" data-path="{{ path }}">rename</span>
+                <span class="delete" data-path="{{ path }}/{{ file }}">delete</span>
+                <span class="moove" data-path="{{ path }}/{{ file }}">moove</span>
+            </div>
         {% endfor %}
     {% else %}
-        <nav>
-            <a href="?action=register" class="register">Register</a><a href="?action=login" class="login">Login</a>
-        </nav>
         <div>
             Connect to find your files
         </div>
