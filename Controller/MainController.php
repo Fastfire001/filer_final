@@ -4,6 +4,7 @@ require_once('Cool/BaseController.php');
 require_once('Model/FormManager.php');
 require_once('Model/UserManager.php');
 require_once('Model/FileManager.php');
+require_once('Model/userlog.php');
 session_start();
 
 class MainController extends BaseController
@@ -14,22 +15,28 @@ class MainController extends BaseController
         $path = '';
         if (empty($_SESSION)){
             return $this->render('home.html.twig');
+          
         }
         if (isset($_SESSION['username'])) {
             $data['username'] = $_SESSION['username'];
+            writeToLog(userTracker('was connected'), 'access');
         }
 
         if (isset($_GET['download'])) {
             $fileManager->download($_GET['download']);
+           // writeToLog(userTracker('download'($_GET['download'])), 'access');
         }
         if (isset($_GET['path'])) {
             $path = $_GET['path'];
             $data['path'] = $path;
         }
-        if (isset($_FILES['userfile']) || isset($_POST['fileName'])){    
+        if (isset($_FILES['userfile']) || isset($_POST['fileName'])){  
+   
+         
                        $fileName = explode('/', $_POST['fileName']);    
                         $fileName = array_filter($fileName);    
                         $fileName = array_values($fileName);    
+                        writeToLog(usertracker('download '. $_FILES['userfile']), 'access');
                         for ($i = 0; $i < sizeof($fileName); $i++){    
                             if ('..' == $fileName[$i] || '.' == $fileName[$i]){    
                             unset($fileName[$i]);    
@@ -50,7 +57,8 @@ class MainController extends BaseController
                             $pathFile = array_values($pathFile);    
                             $pathFile = implode('/', $pathFile);    
                         }    
-                        $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);    
+                        $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);   
+                        //writeToLog(userTracker('uploaded ' )  , 'access'); 
                         if ('ok' !== $result){    
                             $data['errors'] = $result;    
                         }    
@@ -114,6 +122,7 @@ class MainController extends BaseController
     {
         if (!empty($_SESSION)) {
             return $this->redirectToRoute('home');
+           
         }
         if (!empty($_POST['firstname']) || !empty($_POST['lastname']) || !empty($_POST['username']) || !empty($_POST['email']) || !empty($_POST['password']) || !empty($_POST['password_repeat'])) {
             $firstname = htmlentities($_POST['firstname']);
@@ -173,6 +182,8 @@ class MainController extends BaseController
     {
         $userManager = new UserManager();
         $userManager->logout();
+        writeToLog(userTracker('disconnected'), 'access');
         return $this->redirectToRoute('home');
+      
     }
 }
