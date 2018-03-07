@@ -117,13 +117,14 @@ class FileManager
         }
     }
 
-    private function deleteDirs($dir)
+    private static function deleteDirs($dir)
     {
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {
             $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
         }
         rmdir($dir);
     }
+<<<<<<< HEAD
 
     public function securisePath($path)
     {
@@ -142,3 +143,45 @@ class FileManager
         return $path;
     }
 }
+=======
+    public function uploadFile($fileName, $file, $path)
+    {
+        if ('' == $fileName){
+            $path = 'Uploads/' . $_SESSION['id'] . '/' . $path . '/' . $file['name'];
+        } else {
+            $path = 'Uploads/' . $_SESSION['id'] . '/' . $path . '/' . $fileName;
+        }
+        $errors = [];
+        if (!$this->checkSize($file)) {
+            $errors[] = 'The file is too large'; //ILLEGAL ACTION
+        }
+        if (!$this->fileExists($path)) {
+            $errors[] = 'The file you tried to upload already exist'; //ILLEGAL ACTION
+        }
+        if (empty($errors)){
+            move_uploaded_file($file['tmp_name'], $path);
+            return 'ok';
+        } else {
+            return $errors;
+        }
+    }
+
+    private function checkSize($file)
+    {
+        if (9999999 > $file['size']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function fileExists($path)
+    {
+        if (file_exists($path)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+>>>>>>> 82431930c986df0ebdc97bb8cd464eadd4652b55
