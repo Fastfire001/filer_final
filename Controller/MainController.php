@@ -4,7 +4,7 @@ require_once('Cool/BaseController.php');
 require_once('Model/FormManager.php');
 require_once('Model/UserManager.php');
 require_once('Model/FileManager.php');
-require_once('Model/userlog.php');
+require_once('Model/LogManager.php');
 session_start();
 
 class MainController extends BaseController
@@ -12,57 +12,54 @@ class MainController extends BaseController
     public function homeAction()
     {
         $fileManager = new FileManager();
+        $logManager = new LogManager();
         $path = '';
-        if (empty($_SESSION)){
+        if (empty($_SESSION)) {
             return $this->render('home.html.twig');
-          
         }
         if (isset($_SESSION['username'])) {
             $data['username'] = $_SESSION['username'];
-            writeToLog(userTracker('was connected'), 'access');
         }
 
         if (isset($_GET['download'])) {
+            $logManager->writeToLog('download' . $_GET['download'], false);
             $fileManager->download($_GET['download']);
-           // writeToLog(userTracker('download'($_GET['download'])), 'access');
         }
         if (isset($_GET['path'])) {
             $path = $_GET['path'];
             $data['path'] = $path;
         }
-        if (isset($_FILES['userfile']) || isset($_POST['fileName'])){  
-   
-         
-                       $fileName = explode('/', $_POST['fileName']);    
-                        $fileName = array_filter($fileName);    
-                        $fileName = array_values($fileName);    
-                        //writeToLog(usertracker('download '. $_FILES['userfile']), 'access');/////////////////////////
-                        for ($i = 0; $i < sizeof($fileName); $i++){    
-                            if ('..' == $fileName[$i] || '.' == $fileName[$i]){    
-                            unset($fileName[$i]);    
-                            }    
-                        }    
-                        $fileName = array_values($fileName);    
-                        $fileName = implode('/', $fileName);    
-                        $pathFile = '';    
-                        if (isset($_GET['path'])){    
-                            $pathFile = explode('/', $_GET['path']);    
-                            $pathFile = array_filter($pathFile);    
-                            $pathFile = array_values($pathFile);    
-                            for ($i = 0; $i < sizeof($pathFile); $i++){    
-                                if ('..' == $pathFile[$i] || '.' == $pathFile[$i]){    
-                                    unset($pathFile[$i]);    
-                                }    
-                            }    
-                            $pathFile = array_values($pathFile);    
-                            $pathFile = implode('/', $pathFile);    
-                        }    
-                        $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);   
-                        //writeToLog(userTracker('uploaded ' )  , 'access'); 
-                        if ('ok' !== $result){    
-                            $data['errors'] = $result;    
-                        }    
+        if (isset($_FILES['userfile']) || isset($_POST['fileName'])) {
+            $fileName = explode('/', $_POST['fileName']);
+            $fileName = array_filter($fileName);
+            $fileName = array_values($fileName);
+            //writeToLog(usertracker('download '. $_FILES['userfile']), 'access');/////////////////////////
+            for ($i = 0; $i < sizeof($fileName); $i++) {
+                if ('..' == $fileName[$i] || '.' == $fileName[$i]) {
+                    unset($fileName[$i]);
+                }
+            }
+            $fileName = array_values($fileName);
+            $fileName = implode('/', $fileName);
+            $pathFile = '';
+            if (isset($_GET['path'])) {
+                $pathFile = explode('/', $_GET['path']);
+                $pathFile = array_filter($pathFile);
+                $pathFile = array_values($pathFile);
+                for ($i = 0; $i < sizeof($pathFile); $i++) {
+                    if ('..' == $pathFile[$i] || '.' == $pathFile[$i]) {
+                        unset($pathFile[$i]);
                     }
+                }
+                $pathFile = array_values($pathFile);
+                $pathFile = implode('/', $pathFile);
+            }
+            $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);
+            //writeToLog(userTracker('uploaded ' )  , 'access');
+            if ('ok' !== $result) {
+                $data['errors'] = $result;
+            }
+        }
 
         if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
@@ -79,23 +76,23 @@ class MainController extends BaseController
             }
         }
 
-        if (isset($_POST['moove-next-path']) && !empty($_POST['input-hidden-moove'])){
+        if (isset($_POST['moove-next-path']) && !empty($_POST['input-hidden-moove'])) {
             $newPath = $fileManager->securisePath($_POST['moove-next-path']);
             $oldPath = $fileManager->securisePath($_POST['input-hidden-moove']);
             $name = explode('/', $oldPath);
             $name = $name[sizeof($name) - 1];
             $result = $fileManager->moove($oldPath, $newPath, $name);
-            if ('ok' !== $result){
+            if ('ok' !== $result) {
                 $data['errors'] = $result;
             }
         }
 
-        if (!empty($_POST['delete-path'])){
+        if (!empty($_POST['delete-path'])) {
             $deletePath = explode('/', $_POST['delete-path']);
             $deletePath = array_filter($deletePath);
             $deletePath = array_values($deletePath);
-            for ($i = 0; $i < sizeof($deletePath); $i++){
-                if ('..' == $deletePath[$i] || '.' == $deletePath[$i]){
+            for ($i = 0; $i < sizeof($deletePath); $i++) {
+                if ('..' == $deletePath[$i] || '.' == $deletePath[$i]) {
                     unset($deletePath[$i]);
                 }
             }
@@ -113,10 +110,10 @@ class MainController extends BaseController
             $path = array_values($path);
             $dirNav[0] = '/' . $path[0];
             $dirNavT = [];
-            for ($i = 1; $i < sizeof($path); $i++){
+            for ($i = 1; $i < sizeof($path); $i++) {
                 $dirNav[$i] = $dirNav[$i - 1] . '/' . $path[$i];
             }
-            for ($i = 0; $i < sizeof($path); $i++){
+            for ($i = 0; $i < sizeof($path); $i++) {
                 $dirNavT[$i] = [
                     'path' => $dirNav[$i],
                     'name' => $path[$i]
@@ -133,7 +130,7 @@ class MainController extends BaseController
     {
         if (!empty($_SESSION)) {
             return $this->redirectToRoute('home');
-           
+
         }
         if (!empty($_POST['firstname']) || !empty($_POST['lastname']) || !empty($_POST['username']) || !empty($_POST['email']) || !empty($_POST['password']) || !empty($_POST['password_repeat'])) {
             $firstname = htmlentities($_POST['firstname']);
@@ -192,9 +189,10 @@ class MainController extends BaseController
     public function logoutaction()
     {
         $userManager = new UserManager();
+        $logManager = new LogManager();
         $userManager->logout();
-        //writeToLog(userTracker('disconnected'), 'access');/////////////////////////////////////
+        $logManager->writeToLog('disconnected', false);
         return $this->redirectToRoute('home');
-      
+
     }
 }
