@@ -124,7 +124,6 @@ class FileManager
         }
         rmdir($dir);
     }
-<<<<<<< HEAD
 
     public function securisePath($path)
     {
@@ -142,8 +141,7 @@ class FileManager
         $path = str_replace('>', '', $path);
         return $path;
     }
-}
-=======
+
     public function uploadFile($fileName, $file, $path)
     {
         if ('' == $fileName){
@@ -184,4 +182,3 @@ class FileManager
         }
     }
 }
->>>>>>> 82431930c986df0ebdc97bb8cd464eadd4652b55

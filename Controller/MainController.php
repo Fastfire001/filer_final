@@ -36,7 +36,7 @@ class MainController extends BaseController
                        $fileName = explode('/', $_POST['fileName']);    
                         $fileName = array_filter($fileName);    
                         $fileName = array_values($fileName);    
-                        writeToLog(usertracker('download '. $_FILES['userfile']), 'access');
+                        //writeToLog(usertracker('download '. $_FILES['userfile']), 'access');/////////////////////////
                         for ($i = 0; $i < sizeof($fileName); $i++){    
                             if ('..' == $fileName[$i] || '.' == $fileName[$i]){    
                             unset($fileName[$i]);    
@@ -193,7 +193,7 @@ class MainController extends BaseController
     {
         $userManager = new UserManager();
         $userManager->logout();
-        writeToLog(userTracker('disconnected'), 'access');
+        //writeToLog(userTracker('disconnected'), 'access');/////////////////////////////////////
         return $this->redirectToRoute('home');
       
     }
