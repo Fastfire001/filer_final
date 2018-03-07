@@ -36,7 +36,7 @@ class MainController extends BaseController
                        $fileName = explode('/', $_POST['fileName']);    
                         $fileName = array_filter($fileName);    
                         $fileName = array_values($fileName);    
-                        writeToLog(usertracker('download '. $_FILES['userfile']), 'access');
+                        //writeToLog(usertracker('download '. $_FILES['userfile']), 'access');/////////////////////////
                         for ($i = 0; $i < sizeof($fileName); $i++){    
                             if ('..' == $fileName[$i] || '.' == $fileName[$i]){    
                             unset($fileName[$i]);    
@@ -68,13 +68,24 @@ class MainController extends BaseController
             $formManager = new FormManager();
             $oldName = $_POST['old-name'];
             $pathFile = './Uploads/' . $_SESSION['id'] . $_POST['path'];
-            $newName = $formManager->deleteSpecialCharacter($_POST['new-name']);
+            $newName = $formManager->deleteSpecialCharacter($_POST['new-name']);     //TO UPGRADE.......................
             $result = $formManager->checkRename($newName, $pathFile, $oldName);
             if ('ok' == $result) {
                 $oldPath = $pathFile . '/' . $oldName;
                 $newPath = $pathFile . '/' . $newName;
                 $fileManager->rename($oldPath, $newPath);
             } else {
+                $data['errors'] = $result;
+            }
+        }
+
+        if (isset($_POST['moove-next-path']) && !empty($_POST['input-hidden-moove'])){
+            $newPath = $fileManager->securisePath($_POST['moove-next-path']);
+            $oldPath = $fileManager->securisePath($_POST['input-hidden-moove']);
+            $name = explode('/', $oldPath);
+            $name = $name[sizeof($name) - 1];
+            $result = $fileManager->moove($oldPath, $newPath, $name);
+            if ('ok' !== $result){
                 $data['errors'] = $result;
             }
         }
@@ -182,7 +193,7 @@ class MainController extends BaseController
     {
         $userManager = new UserManager();
         $userManager->logout();
-        writeToLog(userTracker('disconnected'), 'access');
+        //writeToLog(userTracker('disconnected'), 'access');/////////////////////////////////////
         return $this->redirectToRoute('home');
       
     }

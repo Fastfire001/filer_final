@@ -58,9 +58,51 @@ class FileManager
             }
             $newPath[0] = '.';
             $newPath = implode('/', $newPath);
-            var_dump($newPath);
         }
         rename($oldPath, $newPath);
+    }
+
+    public function moove($oldPath, $newPath, $name)
+    {
+        $oldPath = './Uploads/' . $_SESSION['id'] . '/' . $oldPath;
+        $newPath = './Uploads/' . $_SESSION['id'] . '/' . $newPath;
+        if (!is_dir($oldPath) && !is_file($oldPath)){
+            $errors[] = 'The file or folder you are trying to move does not exist';
+            //ILLEGAL ACTION
+        }
+        if (!is_dir($newPath)){
+            $errors[] = 'Destination folder is invalid';        //ILLEGAL ACTION
+        }
+        $newPath = $newPath . '/' . $name;
+        if (is_dir($newPath) || is_file($newPath)){
+            $errors[] = 'The file already exists at the destination';       //ILLEGAL ACTION
+        }
+        if (!empty($errors)){
+            return $errors;
+        }
+        if (is_dir($oldPath)){
+            $this->recurse_copy($oldPath, $newPath);
+        } else {
+            $this->rename($oldPath, $newPath);
+        }
+        return 'ok';
+    }
+
+    private function recurse_copy($src,$dst) {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while(false !== ( $file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                if ( is_dir($src . '/' . $file) ) {
+                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
+                }
+                else {
+                    copy($src . '/' . $file,$dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
+        $this->deleteDirs($src);
     }
 
     public function delete($delete)
@@ -82,6 +124,24 @@ class FileManager
         }
         rmdir($dir);
     }
+
+    public function securisePath($path)
+    {
+        $path = explode('/', $path);
+        $path = array_filter($path);
+        $path = array_values($path);
+        for ($i = 0; $i < sizeof($path); $i++){
+            if ('..' == $path[$i] || '.' == $path[$i]){
+                unset($path[$i]);
+            }
+        }
+        $path = array_values($path);
+        $path = implode('/', $path);
+        $path = str_replace('<', '', $path);
+        $path = str_replace('>', '', $path);
+        return $path;
+    }
+
     public function uploadFile($fileName, $file, $path)
     {
         if ('' == $fileName){

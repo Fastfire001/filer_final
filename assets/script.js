@@ -20,6 +20,11 @@ function closeDelete() {
     document.querySelector('div.popup-delete').classList.add('hide');
 }
 
+function mooveForm() {
+    document.querySelector('div.popup-moove').classList.remove('hide');
+    document.querySelector('input.input-hidden-moove').value = this.getAttribute('data-path');
+}
+
 function main() {
     var btnRename = document.querySelectorAll('span.rename');
     for (var i = 0; i < btnRename.length; i++){
@@ -28,6 +33,11 @@ function main() {
     var btnDelete = document.querySelectorAll('span.delete');
     for (var i = 0; i <btnDelete.length; i++){
         btnDelete[i].addEventListener("click", deleteForm);
+    }
+
+    var btnMoove = document.querySelectorAll('span.moove');
+    for (var i =0; i <btnMoove.length; i++){
+        btnMoove[i].addEventListener("click", mooveForm);
     }
 }
 
