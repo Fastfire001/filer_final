@@ -21,41 +21,17 @@ class MainController extends BaseController
             $data['username'] = $_SESSION['username'];
         }
 
-        if (isset($_GET['download'])) {
-            $logManager->writeToLog('download' . $_GET['download'], false);
-            $fileManager->download($_GET['download']);
-        }
         if (isset($_GET['path'])) {
             $path = $_GET['path'];
             $data['path'] = $path;
         }
         if (isset($_FILES['userfile']) || isset($_POST['fileName'])) {
-            $fileName = explode('/', $_POST['fileName']);
-            $fileName = array_filter($fileName);
-            $fileName = array_values($fileName);
-            //writeToLog(usertracker('download '. $_FILES['userfile']), 'access');/////////////////////////
-            for ($i = 0; $i < sizeof($fileName); $i++) {
-                if ('..' == $fileName[$i] || '.' == $fileName[$i]) {
-                    unset($fileName[$i]);
-                }
-            }
-            $fileName = array_values($fileName);
-            $fileName = implode('/', $fileName);
+            $fileName = $fileManager->securisePath($_POST['fileName']);
             $pathFile = '';
             if (isset($_GET['path'])) {
-                $pathFile = explode('/', $_GET['path']);
-                $pathFile = array_filter($pathFile);
-                $pathFile = array_values($pathFile);
-                for ($i = 0; $i < sizeof($pathFile); $i++) {
-                    if ('..' == $pathFile[$i] || '.' == $pathFile[$i]) {
-                        unset($pathFile[$i]);
-                    }
-                }
-                $pathFile = array_values($pathFile);
-                $pathFile = implode('/', $pathFile);
+                $pathFile = $fileManager->securisePath($_GET['path']);
             }
             $result = $fileManager->uploadFile($fileName, $_FILES['userfile'], $pathFile);
-            //writeToLog(userTracker('uploaded ' )  , 'access');
             if ('ok' !== $result) {
                 $data['errors'] = $result;
             }
@@ -65,7 +41,7 @@ class MainController extends BaseController
             $formManager = new FormManager();
             $oldName = $_POST['old-name'];
             $pathFile = './Uploads/' . $_SESSION['id'] . $_POST['path'];
-            $newName = $formManager->deleteSpecialCharacter($_POST['new-name']);     //TO UPGRADE.......................
+            $newName = $fileManager->securisePath($_POST['new-name']);
             $result = $formManager->checkRename($newName, $pathFile, $oldName);
             if ('ok' == $result) {
                 $oldPath = $pathFile . '/' . $oldName;
@@ -88,27 +64,18 @@ class MainController extends BaseController
         }
 
         if (!empty($_POST['delete-path'])) {
-            $deletePath = explode('/', $_POST['delete-path']);
-            $deletePath = array_filter($deletePath);
-            $deletePath = array_values($deletePath);
-            for ($i = 0; $i < sizeof($deletePath); $i++) {
-                if ('..' == $deletePath[$i] || '.' == $deletePath[$i]) {
-                    unset($deletePath[$i]);
-                }
-            }
-            $deletePath = array_values($deletePath);
-            $deletePath = implode('/', $deletePath);
+            $deletePath = $fileManager->securisePath($_POST['delete-path']);
             $fileManager->delete($deletePath);
         }
         $dirContent = $fileManager->scanDir($path);
         $data['dirs'] = $dirContent['0'];
-        $data['files'] = $dirContent['1'];
+        $files = $fileManager->checkExt($dirContent['1']);
+        $data['files'] = $files;
 
         if (!empty($_GET['path'])) {
-            $path = explode('/', $_GET['path']);
-            $path = array_filter($path);
-            $path = array_values($path);
-            $dirNav[0] = '/' . $path[0];
+            $path = $fileManager->securisePath($_GET['path']);
+            $path = explode('/', $path);
+            $dirNav[0] = $path[0];
             $dirNavT = [];
             for ($i = 1; $i < sizeof($path); $i++) {
                 $dirNav[$i] = $dirNav[$i - 1] . '/' . $path[$i];
@@ -124,6 +91,12 @@ class MainController extends BaseController
             $data['dirNav'] = [];
         }
         return $this->render('home.html.twig', $data);
+    }
+
+    public function downloadAction()
+    {
+        $fileManager = new FileManager();
+        $fileManager->download($_GET['dlPath']);
     }
 
     public function registerAction()

@@ -47,7 +47,7 @@
         <div class="dir-nav">
             <a href="?action=home">{{ username }}</a>
             {% for dir in dirNav %}
-                 / <a href="?action=home&path={{ dir.path }}">{{ dir.name }}</a>
+                 / <a href="?action=home&path=/{{ dir.path }}">{{ dir.name }}</a>
             {% endfor %}
         </div>
         {% for dir in dirs %}
@@ -61,10 +61,19 @@
         <br>
         {% for file in files %}
             <div>
-                <a href="?action=home&download={{ path }}/{{ file }}&path={{ path }}" data-name="{{ file }}">{{ file }}</a>
+                <a href="?action=download&dlPath={{ path }}/{{ file.name }}&path={{ path }}" data-name="{{ file.name }}">{{ file.name }}</a>
                 <span class="rename" data-path="{{ path }}">rename</span>
-                <span class="delete" data-path="{{ path }}/{{ file }}">delete</span>
-                <span class="moove" data-path="{{ path }}/{{ file }}">moove</span>
+                <span class="delete" data-path="{{ path }}/{{ file.name }}">delete</span>
+                <span class="moove" data-path="{{ path }}/{{ file.name }}">moove</span>
+                {% if file.img %}
+                    <a href="?action=viewImg&path={{ path }}/{{ file.name }}">view</a>
+                {% elseif file.audio %}
+                    <a href="?action=viewAudio&path={{ path }}/{{ file.name }}">view</a>
+                {% elseif file.video %}
+                    <a href="?action=viewVideo&path={{ path }}/{{ file.name }}">view</a>
+                {% elseif file.write %}
+                    <a href="?action=viewTxt&path={{ path }}/{{ file.name }}">view and write</a>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}
