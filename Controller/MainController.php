@@ -25,6 +25,7 @@ class MainController extends BaseController
             $path = $_GET['path'];
             $data['path'] = $path;
         }
+        //UPLOAD
         if (isset($_FILES['userfile']) || isset($_POST['fileName'])) {
             $fileName = $fileManager->securisePath($_POST['fileName']);
             $pathFile = '';
@@ -36,7 +37,7 @@ class MainController extends BaseController
                 $data['errors'] = $result;
             }
         }
-
+        //RENAME
         if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
             $oldName = $_POST['old-name'];
@@ -47,11 +48,12 @@ class MainController extends BaseController
                 $oldPath = $pathFile . '/' . $oldName;
                 $newPath = $pathFile . '/' . $newName;
                 $fileManager->rename($oldPath, $newPath);
+                $logManager->writeToLog('rename ' . $oldPath . ' -> ' . $newPath, false);
             } else {
                 $data['errors'] = $result;
             }
         }
-
+        //Move
         if (isset($_POST['moove-next-path']) && !empty($_POST['input-hidden-moove'])) {
             $newPath = $fileManager->securisePath($_POST['moove-next-path']);
             $oldPath = $fileManager->securisePath($_POST['input-hidden-moove']);
@@ -62,7 +64,7 @@ class MainController extends BaseController
                 $data['errors'] = $result;
             }
         }
-
+        //delete
         if (!empty($_POST['delete-path'])) {
             $deletePath = $fileManager->securisePath($_POST['delete-path']);
             $fileManager->delete($deletePath);
@@ -101,6 +103,7 @@ class MainController extends BaseController
 
     public function registerAction()
     {
+        $logManager = new LogManager();
         if (!empty($_SESSION)) {
             return $this->redirectToRoute('home');
 
@@ -128,6 +131,7 @@ class MainController extends BaseController
             $userManager->addUser($firstname, $lastname, $username, $email, $password);
             $user = $userManager->getUserByUsername($username);
             mkdir('Uploads/' . $user['id']);
+            $logManager->writeToLog('Create the account with the id ' . $user['id'], false);
             return $this->redirectToRoute('login');
         }
         return $this->render('register.html.twig');
@@ -135,7 +139,9 @@ class MainController extends BaseController
 
     public function loginaction()
     {
+        $logManager = new LogManager();
         if (!empty($_SESSION)) {
+            $logManager->writeToLog('try to go on action=login');
             return $this->redirectToRoute('home');
         }
         if (!empty($_POST['username']) || !empty($_POST['password'])) {
@@ -147,8 +153,10 @@ class MainController extends BaseController
                 $userManager = new UserManager();
                 $user = $userManager->getUserByUsername($username);
                 $userManager->login($username, $user['id']);
+                $logManager->writeToLog('connect to account with the id ' . $user['id'], false);
                 $this->redirectToRoute('home');
             } else {
+                $logManager->writeToLog('try to connect on account ' . $username);
                 $data = [
                     'errors' => 'Wrong password or username',
                     'username' => $username
@@ -171,48 +179,49 @@ class MainController extends BaseController
     public function viewaction()
     {
         $fileManager = new FileManager();
-        if (empty($_SESSION['id'])){
-            ////ILLEGAL ACTION USer OFFLINE
+        $logManager = new LogManager();
+        if (empty($_SESSION['id'])) {
+            $logManager->writeToLog('try to go on action=view');
         }
-        if (isset($_POST['file-content'])){
+        if (isset($_POST['file-content'])) {
+            $logManager->writeToLog('Write in the file ' . $_POST['file'], false);
             file_put_contents($_POST['file'], $_POST['file-content']);
             $data['close'] = 'You can close this window';
             return $this->render('view.html.twig', $data);
         }
         $path = ['./uploads/' . $_SESSION['id'] . '/' . $fileManager->securisePath($_GET['path'])];
         $result = $fileManager->checkExt($path)['0'];
-        if (!is_file($path['0'])){
+        if (!is_file($path['0'])) {
             $errors[] = 'Can not display this file type';
-            //ILLEGAL ACTION
+            $logManager->writeToLog('try to display the file ' . $path[0]);
         }
-        if (isset($result['img'])){
+        if (isset($result['img'])) {
             $data = [
                 'ext' => 'img',
                 'name' => basename($result['name']),
                 'file' => $result['name']
             ];
-        }
-        if (isset($result['audio'])){
+        } elseif (isset($result['audio'])) {
             $data = [
                 'ext' => 'audio',
                 'file' => $result['name']
             ];
-        }
-        if (isset($result['video'])){
+        } elseif (isset($result['video'])) {
             $data = [
                 'ext' => 'video',
                 'file' => $result['name']
             ];
-        }
-        if (isset($result['write'])){
+        } elseif (isset($result['write'])) {
             $data = [
                 'ext' => 'txt',
                 'file' => $result['name'],
                 'fileContent' => file_get_contents($result['name'])
             ];
+        } else {
+            $logManager->writeToLog('try to display a file with the wrong extention->' . $path[0]);
         }
         $data['username'] = $_SESSION['username'];
-        if (!empty($errors)){
+        if (!empty($errors)) {
             $data['errors'] = $errors;
         }
         $path = $fileManager->securisePath($_GET['path']);

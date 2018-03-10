@@ -3,7 +3,7 @@
 class LogManager
 {
 
-    private function userTracker($action)
+    private function userTracker()
     {
         if (!empty($_SESSION['username'])) {
             $begin = 'User ' . $_SESSION['username'] . '(' . $_SESSION['id'] . ')';

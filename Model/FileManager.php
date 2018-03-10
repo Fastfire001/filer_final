@@ -1,5 +1,7 @@
 <?php
 
+require_once('Model/LogManager.php');
+
 class FileManager
 {
     public function scanDir($path)
@@ -74,25 +76,30 @@ class FileManager
 
     public function moove($oldPath, $newPath, $name)
     {
+        $logManager = new LogManager();
         $oldPath = './Uploads/' . $_SESSION['id'] . '/' . $oldPath;
         $newPath = './Uploads/' . $_SESSION['id'] . '/' . $newPath;
         if (!is_dir($oldPath) && !is_file($oldPath)){
             $errors[] = 'The file or folder you are trying to move does not exist';
-            //ILLEGAL ACTION
+            $logManager->writeToLog('try to move a file who does not exist-> ' . $oldPath);
         }
         if (!is_dir($newPath)){
-            $errors[] = 'Destination folder is invalid';        //ILLEGAL ACTION
+            $errors[] = 'Destination folder is invalid';
+            $logManager->writeToLog('try to move a file with a invalid destination-> ' . $newPath);
         }
         $newPath = $newPath . '/' . $name;
         if (is_dir($newPath) || is_file($newPath)){
-            $errors[] = 'The file already exists at the destination';       //ILLEGAL ACTION
+            $errors[] = 'The file already exists at the destination';
+            $logManager->writeToLog('try to move a file who already exist a destination-> ' . $newPath);
         }
         if (!empty($errors)){
             return $errors;
         }
         if (is_dir($oldPath)){
+            $logManager->writeToLog('move a folder ' . $oldPath .' -> ' . $newPath, false);
             $this->recurse_copy($oldPath, $newPath);
         } else {
+            $logManager->writeToLog('move a file ' . $oldPath . ' -> ' . $newPath, false);
             $this->rename($oldPath, $newPath);
         }
         return 'ok';
@@ -117,13 +124,16 @@ class FileManager
 
     public function delete($delete)
     {
+        $logManager = new LogManager();
         $path = 'Uploads/' . $_SESSION['id'] . '/' . $delete;
         if (is_file($path)) {
+            $logManager->writeToLog('delete file-> ' . $path, false);
             unlink($path);
         } elseif (is_dir($path)) {
+            $logManager->writeToLog('delete folder ' . $path, false);
             $this->deleteDirs($path);
         } else {
-            //ILLEGAL ACTION
+            $logManager->writeToLog('try to delete something who does not exist-> ' . $path);
         }
     }
 
@@ -154,6 +164,7 @@ class FileManager
 
     public function uploadFile($fileName, $file, $path)
     {
+        $logManager = new LogManager();
         if ('' == $fileName){
             $path = 'Uploads/' . $_SESSION['id'] . '/' . $path . '/' . $file['name'];
         } else {
@@ -161,13 +172,16 @@ class FileManager
         }
         $errors = [];
         if (!$this->checkSize($file)) {
-            $errors[] = 'The file is too large'; //ILLEGAL ACTION
+            $errors[] = 'The file is too large';
+            $logManager->writeToLog('Try to upload a file to large');
         }
         if (!$this->fileExists($path)) {
-            $errors[] = 'The file you tried to upload already exist'; //ILLEGAL ACTION
+            $errors[] = 'The file you tried to upload already exist';
+            $logManager->writeToLog('try to upload a file who already exist');
         }
         if (empty($errors)){
             move_uploaded_file($file['tmp_name'], $path);
+            $logManager->writeToLog('Upload-> ' . $path, false);
             return 'ok';
         } else {
             return $errors;

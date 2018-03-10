@@ -1,11 +1,13 @@
 <?php
 
 require_once('Model/UserManager.php');
+require_once('Model/LogManager.php');
 
 class FormManager
 {
     public function checkRegister($firstname, $lastname, $username, $email, $password, $password_repeat)
     {
+        $logManager = new LogManager();
         if (strlen($firstname) < 2) {
             $data[] = "First name must be 2 characters or more";
         }
@@ -28,9 +30,11 @@ class FormManager
         $usersByUsername = $userManager->getUserByUsername($username);
         $usersByEmail = $userManager->getUserByEmail($email);
         if (!empty($usersByUsername)) {
+            $logManager->writeToLog('try to create a account with a username already taken-> ' . $username);
             $data[] = 'this username is already used';
         }
         if (!empty($usersByEmail)) {
+            $logManager->writeToLog('try to create a account with a email adress already taken-> ' . $email);
             $data[] = 'this email is already used';
         }
         if (empty($data)) {
@@ -57,23 +61,18 @@ class FormManager
 
     public function checkRename($newName, $pathFile, $oldName)
     {
+        $logManager = new LogManager();
         $data = [];
         if (!file_exists($pathFile . '/' . $oldName)) {
             $data[] = 'the file you are trying to rename does not exist';
+            $logManager->writeToLog('Try to rename a file who does not exist->' . $pathFile . '/' . $oldName);
         }
         if (strlen($newName) == 0) {
             $data[] = 'the name is too short';
+            $logManager->writeToLog('try to rename a file with a empty name');
         } else if (file_exists($pathFile . '/' . $newName)) {
-            $data[] = 'the file already exists';
-        }
-        $count = 0;
-        for ($i = 0; $i < strlen($newName); $i++){
-            if ('.' == $newName[$i]){
-                $count++;
-            }
-        }
-        if ($count == strlen($newName)){
-            $data[] = 'invalid name';
+            $data[] = 'the file already exists-> ' . $pathFile . '/' . $newName;
+            $logManager->writeToLog('try to rename file with a name who already exist');
         }
         if (empty($data)){
             return 'ok';
