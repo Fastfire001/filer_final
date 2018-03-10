@@ -1,0 +1,41 @@
+{% extends 'layout.html.twig' %}
+
+{% block page_title %}{{ parent() }} - View Image {% endblock %}
+
+{% block content %}
+    {% if close %}
+    <div class="close">
+            {{ close }}
+    </div>
+    {% else %}
+        <div class="errors">
+            {% for error in errors %}
+                {{ error }} <br>
+            {% endfor %}
+        </div>
+        <div class="view">
+            {% if ext == 'img' %}
+                <img src="{{ file }}" alt="{{ name }}">
+            {% elseif ext == 'audio' %}
+                <video controls autoplay name="media">
+                    <source src="{{ file }}">
+                </video>
+            {% elseif ext == 'video' %}
+                <video controls autoplay loop>
+                    <source src="{{ file }}">
+                </video>
+            {% elseif ext == 'txt' %}
+                <form action="?action=view" method="POST">
+                    <textarea name="file-content" id="">
+                        {{ fileContent }}
+                    </textarea>
+                    <input type="hidden" value="{{ file }}" name="file">
+                    <br>
+                    <input type="submit">
+                </form>
+            {% else %}
+                ERROR
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
