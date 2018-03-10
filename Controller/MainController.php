@@ -166,6 +166,60 @@ class MainController extends BaseController
         $userManager->logout();
         $logManager->writeToLog('disconnected', false);
         return $this->redirectToRoute('home');
+    }
 
+    public function viewaction()
+    {
+        $fileManager = new FileManager();
+        if (empty($_SESSION['id'])){
+            ////ILLEGAL ACTION USer OFFLINE
+        }
+        if (isset($_POST['file-content'])){
+            file_put_contents($_POST['file'], $_POST['file-content']);
+            $data['close'] = 'You can close this window';
+            return $this->render('view.html.twig', $data);
+        }
+        $path = ['./uploads/' . $_SESSION['id'] . '/' . $fileManager->securisePath($_GET['path'])];
+        $result = $fileManager->checkExt($path)['0'];
+        if (!is_file($path['0'])){
+            $errors[] = 'Can not display this file type';
+            //ILLEGAL ACTION
+        }
+        if (isset($result['img'])){
+            $data = [
+                'ext' => 'img',
+                'name' => basename($result['name']),
+                'file' => $result['name']
+            ];
+        }
+        if (isset($result['audio'])){
+            $data = [
+                'ext' => 'audio',
+                'file' => $result['name']
+            ];
+        }
+        if (isset($result['video'])){
+            $data = [
+                'ext' => 'video',
+                'file' => $result['name']
+            ];
+        }
+        if (isset($result['write'])){
+            $data = [
+                'ext' => 'txt',
+                'file' => $result['name'],
+                'fileContent' => file_get_contents($result['name'])
+            ];
+        }
+        $data['username'] = $_SESSION['username'];
+        if (!empty($errors)){
+            $data['errors'] = $errors;
+        }
+        $path = $fileManager->securisePath($_GET['path']);
+        $path = explode('/', $path);
+        unset($path[sizeof($path) - 1]);
+        $path = array_values($path);
+        $data['path'] = implode('/', $path);
+        return $this->render('view.html.twig', $data);
     }
 }

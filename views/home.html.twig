@@ -66,13 +66,13 @@
                 <span class="delete" data-path="{{ path }}/{{ file.name }}">delete</span>
                 <span class="moove" data-path="{{ path }}/{{ file.name }}">moove</span>
                 {% if file.img %}
-                    <a href="?action=viewImg&path={{ path }}/{{ file.name }}">view</a>
+                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
                 {% elseif file.audio %}
-                    <a href="?action=viewAudio&path={{ path }}/{{ file.name }}">view</a>
+                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
                 {% elseif file.video %}
-                    <a href="?action=viewVideo&path={{ path }}/{{ file.name }}">view</a>
+                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
                 {% elseif file.write %}
-                    <a href="?action=viewTxt&path={{ path }}/{{ file.name }}">view and write</a>
+                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view and write</a>
                 {% endif %}
             </div>
         {% endfor %}
