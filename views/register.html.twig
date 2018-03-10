@@ -11,17 +11,17 @@
     </div>
     <form action="?action=register" method="POST" class="registerForm">
         <label for="firstname">First name</label><br>
-        <input type="text" name="firstname" id="firstname" maxlength="254" class="form-control" value="{{ firstname }}"><br>
+        <input type="text" name="firstname" required id="firstname" maxlength="254" class="form-control" value="{{ firstname }}"><br>
         <label for="lastname">Last name</label><br>
-        <input type="text" name="lastname" id="lastname" maxlength="254" class="form-control" value="{{ lastname }}"><br>
+        <input type="text" name="lastname" required id="lastname" maxlength="254" class="form-control" value="{{ lastname }}"><br>
         <label for="username">Username</label><br>
-        <input type="text" name="username" id="username" maxlength="254" class="form-control" value="{{ username }}"><br>
+        <input type="text" name="username" required id="username" maxlength="254" class="form-control" value="{{ username }}"><br>
         <label for="email">Email</label><br>
-        <input type="email" name="email" id="email" maxlength="254" class="form-control" value="{{ email }}"><br>
+        <input type="email" name="email" required id="email" maxlength="254" class="form-control" value="{{ email }}"><br>
         <label for="password">Password</label><br>
-        <input type="password" name="password" id="password" maxlength="254" class="form-control"><br>
+        <input type="password" name="password" required id="password" maxlength="254" minlength="6" class="form-control"><br>
         <label for="password_repeat">Repeat password</label><br>
-        <input type="password" name="password_repeat" id="password_repeat" maxlength="254" class="form-control"><br>
+        <input type="password" name="password_repeat" required id="password_repeat" maxlength="254" minlength="6" class="form-control"><br>
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
 {% endblock %}

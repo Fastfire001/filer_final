@@ -8,9 +8,9 @@
     </div>
     <form action="?action=login" method="POST" class="loginForm">
         <label for="username">Username</label><br>
-        <input type="text" name="username" id="username" class="form-control" value="{{ username }}"><br>
+        <input type="text" name="username" id="username" required class="form-control" value="{{ username }}"><br>
         <label for="password">Password</label><br>
-        <input type="password" name="password" id="password" class="form-control"><br>
+        <input type="password" name="password" id="password" required class="form-control"><br>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
 {% endblock %}
