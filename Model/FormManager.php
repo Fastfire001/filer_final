@@ -71,8 +71,8 @@ class FormManager
             $data[] = 'the name is too short';
             $logManager->writeToLog('try to rename a file with a empty name');
         } else if (file_exists($pathFile . '/' . $newName)) {
-            $data[] = 'the file already exists-> ' . $pathFile . '/' . $newName;
-            $logManager->writeToLog('try to rename file with a name who already exist');
+            $data[] = 'This name is already taken';
+            $logManager->writeToLog('try to rename file with a name who already exist-> ' . $pathFile . '/' . $newName);
         }
         if (empty($data)){
             return 'ok';

@@ -4,6 +4,7 @@
 
 {% block content %}
     {% if username %}
+        <div class="overlay hide"></div>
         <div class="popup-moove hide">
             <form action="?action=home&path={{ path }}" method="POST">
                 <label for="moove-input">Where do you want to move your file?</label><br>
@@ -26,20 +27,23 @@
                 <input class="delete-path" type="hidden" name="delete-path">
                 Do you want delete <span class="delete-name"></span>
                 <br>
-                <input type="submit" value="Yes">
-                <span class="close-delete">No</span>
+                <input type="submit" value="Yes" class="send-delete">
             </form>
+            <button class="close-delete">No</button>
         </div>
-        <div class="upload">
-            <form enctype="multipart/form-data" action="?action=home&path={{ path }}" method="POST">
-                <input type="hidden" name="MAX_FILE_SIZE" value="20000000">
-                <input name="userfile" type="file" /><br>
-                <label for="fileName">Choose the name of your file (don't forget the extension):</label><br>
-                <input id="fileName" name="fileName" type="text"><br>
-                <input type="submit" value="Send">
-            </form>
+        <div class="new">
+            <div class="upload">
+                <form enctype="multipart/form-data" action="?action=home&path={{ path }}" method="POST">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="20000000">
+                    <input name="userfile" type="file"/><br>
+                    <label for="fileName">Choose the name of your file (don't forget the extension):</label><br>
+                    <input id="fileName" name="fileName" type="text"><br>
+                    <input type="submit" value="Send">
+                </form>
+            </div>
+            <a href="?action=home&newdir=true&path={{ path }}" class="new-dir">Add a new directory</a>
         </div>
-        <div class="error">
+        <div class="errors">
             {% for error in errors %}
                 {{ error }} <br>
             {% endfor %}
@@ -47,37 +51,43 @@
         <div class="dir-nav">
             <a href="?action=home">{{ username }}</a>
             {% for dir in dirNav %}
-                 / <a href="?action=home&path=/{{ dir.path }}">{{ dir.name }}</a>
+                / <a href="?action=home&path=/{{ dir.path }}">{{ dir.name }}</a>
             {% endfor %}
         </div>
-        {% for dir in dirs %}
-            <div>
-                <a href="?action=home&path={{ path }}/{{ dir }}">{{ dir }}</a>
-                <span class="rename" data-path="{{ path }}">rename</span>
-                <span class="delete" data-path="{{ path }}/{{ dir }}">delete</span>
-                <span class="moove" data-path="{{ path }}/{{ dir }}">moove</span>
-            </div>
-        {% endfor %}
-        <br>
-        {% for file in files %}
-            <div>
-                <a href="?action=download&dlPath={{ path }}/{{ file.name }}&path={{ path }}" data-name="{{ file.name }}">{{ file.name }}</a>
-                <span class="rename" data-path="{{ path }}">rename</span>
-                <span class="delete" data-path="{{ path }}/{{ file.name }}">delete</span>
-                <span class="moove" data-path="{{ path }}/{{ file.name }}">moove</span>
-                {% if file.img %}
-                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
-                {% elseif file.audio %}
-                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
-                {% elseif file.video %}
-                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view</a>
-                {% elseif file.write %}
-                    <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank">view and write</a>
-                {% endif %}
-            </div>
-        {% endfor %}
+        <div class="content">
+            {% for dir in dirs %}
+                <div class="dir">
+                    <img src="./assets/images/folder.png" alt="folder" class="folder">
+                    <a href="?action=home&path={{ path }}/{{ dir }}" class="file-dir">{{ dir }}</a>
+                    <span class="delete btn" data-path="{{ path }}/{{ dir }}">delete</span>
+                    <span class="rename btn" data-path="{{ path }}">rename</span>
+                    <span class="moove btn" data-path="{{ path }}/{{ dir }}">move</span>
+                    <div class="hr"></div>
+                </div>
+            {% endfor %}
+            {% for file in files %}
+                <div class="file">
+                    <img src="./assets/images/file.png" alt="file" class="file">
+                    <a href="?action=download&dlPath={{ path }}/{{ file.name }}&path={{ path }}"
+                       data-name="{{ file.name }}" class="file-dir">{{ file.name }}</a>
+                    <span class="delete btn" data-path="{{ path }}/{{ file.name }}">delete</span>
+                    <span class="rename btn" data-path="{{ path }}">rename</span>
+                    <span class="moove btn" data-path="{{ path }}/{{ file.name }}">move</span>
+                    {% if file.img %}
+                        <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank" class="view">view</a>
+                    {% elseif file.audio %}
+                        <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank" class="view">view</a>
+                    {% elseif file.video %}
+                        <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank" class="view">view</a>
+                    {% elseif file.write %}
+                        <a href="?action=view&path={{ path }}/{{ file.name }}" target="_blank" class="view">view&nbsp;and&nbsp;write</a>
+                    {% endif %}
+                    <div class="hr"></div>
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
-        <div>
+        <div class="offline">
             Connect to find your files
         </div>
     {% endif %}
