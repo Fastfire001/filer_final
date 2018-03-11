@@ -37,6 +37,22 @@ class MainController extends BaseController
                 $data['errors'] = $result;
             }
         }
+        //NEWDIR
+        if (isset($_GET['newdir']) && true == $_GET['newdir']) {
+            if (isset($_GET['path'])) {
+                $path = $fileManager->securisePath($_GET['path']);
+            }
+            $path = './uploads/' . $_SESSION['id'] . '/' . $path;
+            if (is_dir($path) && !is_dir($path . '/newFolder')) {
+                $logManager->writeToLog('create new folder at-> ' . $path, false);
+                mkdir($path . '/newFolder');
+            } elseif (is_dir($path . '/newFolder')) {
+                $logManager->writeToLog('try to create e new folder who already exist' . $path);
+                $data['errors'] = ['there is already a new folder'];
+            } else {
+                $logManager->writeToLog('try to create a new folder at-> ' . $path);
+            }
+        }
         //RENAME
         if (!empty($_POST['new-name']) || !empty($_POST['old-name'])) {
             $formManager = new FormManager();
@@ -68,6 +84,11 @@ class MainController extends BaseController
         if (!empty($_POST['delete-path'])) {
             $deletePath = $fileManager->securisePath($_POST['delete-path']);
             $fileManager->delete($deletePath);
+        }
+
+        if (isset($_GET['path'])) {
+            $path = $_GET['path'];
+            $data['path'] = $path;
         }
         $dirContent = $fileManager->scanDir($path);
         $data['dirs'] = $dirContent['0'];
@@ -123,7 +144,7 @@ class MainController extends BaseController
                     'errors' => $form_result,
                     'firstname' => $firstname,
                     'lastname' => $lastname,
-                    'username' => $username,
+                    'usernamee' => $username,
                     'email' => $email
                 ];
                 return $this->render('register.html.twig', $data);
@@ -182,6 +203,7 @@ class MainController extends BaseController
         $logManager = new LogManager();
         if (empty($_SESSION['id'])) {
             $logManager->writeToLog('try to go on action=view');
+            $this->redirectToRoute('home');
         }
         if (isset($_POST['file-content'])) {
             $logManager->writeToLog('Write in the file ' . $_POST['file'], false);

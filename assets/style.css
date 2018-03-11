@@ -1,3 +1,26 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+
 .hide{
     display: none;
 }
@@ -5,4 +28,265 @@
 .popup-rename{
     //TODO
     //style for popup
+}
+
+header{
+    background-color: #067BC2;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 200%;
+    height: 10vh;
+}
+
+nav{
+    margin: 1vw;
+    border: solid #067BC2;
+    border-width: 3px;
+    width: 98vw;
+    height: 4vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+div.upload{
+}
+
+div.new{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+    width: 80vw;
+    border: solid #067BC2;
+    border-width: 3px;
+    text-align: center;
+    margin-left: 10vw;
+    line-height: 200%;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+div.errors{
+    text-align: center;
+    color: red;
+    text-align: center;
+}
+
+div.dir-nav{
+    margin-left: 5vw;
+    border: solid #067BC2;
+    border-width: 3px;
+    padding: 3px;
+    width: fit-content;
+}
+
+img.folder{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+div.dir{
+    border: solid #067BC2;
+    border-width: 1.5px;
+}
+
+div.file{
+    border: solid #067BC2;
+    border-width: 1.5px;
+}
+
+div.content{
+    border: solid #067BC2;
+    border-width: 3px;
+    max-width: 89.5vw;
+    margin: auto;
+    overflow-y: scroll;
+    height: 50vh;
+}
+
+img.file{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+a.file-dir{
+    float: left;
+}
+
+a.view{
+    cursor: pointer;
+    float: right;
+    text-decoration: none;
+    color: black;
+}
+
+a.view:hover{
+    color: #067BC2;
+}
+
+span.moove{
+    float: right;
+    cursor: pointer;
+    margin-left: 5vw;
+}
+
+span.moove:hover{
+    color: #067BC2;
+}
+
+span.rename{
+    float: right;
+    cursor: pointer;
+    margin-left: 5vw;
+}
+
+span.rename:hover{
+    color: #067BC2;
+}
+
+span.delete{
+    float: right;
+    color: red;
+    margin-left: 5vw;
+    cursor: pointer;
+    margin-right: 0.5vw;
+}
+
+span.delete:hover{
+    color: #ae0000;
+}
+
+a.nav{
+    text-decoration: none;
+    color: #067BC2;
+}
+
+a.nav:hover{
+    text-decoration: underline;
+}
+
+a.new-dir{
+    text-decoration: none;
+    background-color: #067BC2;
+    color: white;
+    padding: 10px;
+    border-radius: 40px;
+}
+
+a.new-dir:hover{
+    background-color: black;
+}
+
+div.overlay{
+    position: fixed;
+    background: rgba(0,0,0,0.6);
+    z-index: 5;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.flex{
+    display: flex;
+}
+
+div.popup-moove{
+    border: solid #067BC2;
+    border-width: 3px;
+    text-align: center;
+    line-height: 2;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    height: 25vh;
+    width: 25vw;
+    margin-left: 37.5vw;
+    top: 37.5vh;
+    z-index: 6;
+}
+
+div.popup-rename{
+    border: solid #067BC2;
+    border-width: 3px;
+    text-align: center;
+    line-height: 2;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    height: 25vh;
+    width: 25vw;
+    margin-left: 37.5vw;
+    top: 37.5vh;
+    z-index: 6;
+}
+
+div.popup-delete{
+    border: solid #067BC2;
+    border-width: 3px;
+    text-align: center;
+    line-height: 2;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: fixed;
+    height: 25vh;
+    width: 25vw;
+    margin-left: 37.5vw;
+    top: 37.5vh;
+    z-index: 6;
+}
+
+
+input.send-delete{
+    align-items: flex-start;
+    text-align: center;
+    cursor: default;
+    color: buttontext;
+    background-color: buttonface;
+    box-sizing: border-box;
+    padding: 2px 6px 3px;
+    border-width: 2px;
+    border-style: outset;
+    border-color: buttonface;
+    border-image: initial;
+}
+
+img.view-img{
+    max-width: 98vw;
+    max-height: 98vh;
+}
+
+div.view{
+    text-align: center;
+}
+
+textarea.write-content{
+    width: 50vw;
+    height: 60vh;
+}
+
+div.offline{
+    text-align: center;
+}
+
+form.registerForm{
+    text-align: center;
+}
+
+form.loginForm{
+    text-align: center;
+}
+
+div.view-error{
+    text-align: center;
+    color: red;
 }

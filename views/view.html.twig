@@ -15,7 +15,7 @@
         </div>
         <div class="view">
             {% if ext == 'img' %}
-                <img src="{{ file }}" alt="{{ name }}">
+                <img src="{{ file }}" alt="{{ name }}" class="view-img">
             {% elseif ext == 'audio' %}
                 <video controls autoplay name="media">
                     <source src="{{ file }}">
@@ -26,7 +26,7 @@
                 </video>
             {% elseif ext == 'txt' %}
                 <form action="?action=view" method="POST">
-                    <textarea name="file-content" id="">
+                    <textarea name="file-content" class="write-content">
                         {{ fileContent }}
                     </textarea>
                     <input type="hidden" value="{{ file }}" name="file">
@@ -34,7 +34,7 @@
                     <input type="submit">
                 </form>
             {% else %}
-                ERROR
+                <div class="view-error">ERROR</div>
             {% endif %}
         </div>
     {% endif %}

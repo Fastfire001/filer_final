@@ -4,7 +4,7 @@
 
 {% block content %}
     {{ path }}
-    <div class="error">
+    <div class="errors">
         {% for error in errors %}
             {{ error }} <br>
         {% endfor %}
@@ -15,7 +15,7 @@
         <label for="lastname">Last name</label><br>
         <input type="text" name="lastname" required id="lastname" maxlength="254" class="form-control" value="{{ lastname }}"><br>
         <label for="username">Username</label><br>
-        <input type="text" name="username" required id="username" maxlength="254" class="form-control" value="{{ username }}"><br>
+        <input type="text" name="username" required id="username" maxlength="254" class="form-control" value="{{ usernamee }}"><br>
         <label for="email">Email</label><br>
         <input type="email" name="email" required id="email" maxlength="254" class="form-control" value="{{ email }}"><br>
         <label for="password">Password</label><br>
